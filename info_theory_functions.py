@@ -85,15 +85,15 @@ def nearestNeighborsEntropy(x):
     For a review see Beirlant et al., 2001.
     '''
 
-    rho = np.zeros((len(x),))
+    rho = np.zeros((x.shape[0],))
     H   = 0
     for idx,pt in enumerate(x):
         # get second smallest minimum distance (first will always be i=j)
         # H = 1/n sum_i=1^n ln(n*rho_n,i) + ln(2) + Euler's constant
         if idx > 1:
-            rho[idx] = sort(abs(pt - x[:idx-1]))[0]
+            rho[idx] = sort(np.sqrt(sum((pt - x[:idx-1,:])**2,axis=1)))[0]
             H += log((idx+1)*rho[idx])
         
     
     # convert nats to bits
-    return (1.0/log(2))*((1.0/float(len(x)))*H + log(2) + 0.5772156649)
+    return log2(e)*((1.0/float(len(x)))*H + log(2) + 0.5772156649)
