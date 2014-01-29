@@ -81,7 +81,8 @@ def binaryWordsInformation(spikes,stimulus):
 def nearestNeighborsEntropy(x):
     '''Compute the binless entropy of a random vector using average nearest 
     neighbors distance (Kozachenko and Leonenko, 1987).
-
+    
+    For a review see Beirlant et al., 2001.
     '''
 
     rho = np.zeros((len(x),))
