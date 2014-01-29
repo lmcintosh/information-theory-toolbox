@@ -79,7 +79,7 @@ def binaryWordsInformation(spikes,stimulus):
 
 
 def nearestNeighborsEntropy(x):
-    '''Compute the binless entropy of a random vector using average nearest 
+    '''Compute the binless entropy (bits) of a random vector using average nearest 
     neighbors distance (Kozachenko and Leonenko, 1987).
     
     For a review see Beirlant et al., 2001.
@@ -89,10 +89,11 @@ def nearestNeighborsEntropy(x):
     H   = 0
     for idx,pt in enumerate(x):
         # get second smallest minimum distance (first will always be i=j)
-        rho[idx] = sort(abs(pt - x[:idx]))[1]
-        
         # H = 1/n sum_i=1^n ln(n*rho_n,i) + ln(2) + Euler's constant
-        H += log((idx+1)*rho[idx])
+        if idx > 1:
+            rho[idx] = sort(abs(pt - x[:idx-1]))[0]
+            H += log((idx+1)*rho[idx])
+        
     
-
-    return (1.0/float(len(x)))*H + log(2) + 0.5772156649
+    # convert nats to bits
+    return (1.0/log(2))*((1.0/float(len(x)))*H + log(2) + 0.5772156649)
