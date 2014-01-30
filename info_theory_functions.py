@@ -114,4 +114,9 @@ def nnInfo(x,y):
     by using nearest neighbors entropy and I = HX + HY - HXY.
     '''
     
+    if len(x.shape) < 2:
+        x = np.reshape(x, (x.shape[0],1))
+    if len(y.shape) < 2:
+        y = np.reshape(y, (y.shape[0],1))
+    
     return nnEntropy(x) + nnEntropy(y) - nnEntropy(np.concatenate([x,y],axis=1))
