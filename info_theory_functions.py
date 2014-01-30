@@ -83,7 +83,7 @@ def binaryWordsInformation(spikes,stimulus):
 
 def getrho(x):
     if len(x.shape) < 2:
-        x = np.reshape(x, (1000,1))
+        x = np.reshape(x, (x.shape[0],1))
     D = squareform(pdist(x, 'euclidean'))
     D = D + np.max(D)*eye(D.shape[0])
     return np.min(D, axis=0)
@@ -107,6 +107,7 @@ def nnEntropy(x):
     rho = getrho(x)
     
     return k*mean(log2(rho)) + log2(x.shape[0]*Ak/k) + log2(e)*0.5772156649
+
 
 def nnInfo(x,y):
     '''nnInfo calculates mutual information between x and y 
