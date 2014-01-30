@@ -20,7 +20,7 @@ def mutualinfo(x, y, nBins, minX=0, maxX=0, minY=0, maxY=0):
     
     # in future want to make a default for min and max
     if minX==maxX:
-        binsX = np.linspace(min(x), max(y), nBins+1)
+        binsX = np.linspace(min(x), max(x), nBins+1)
     else:
         binsX = np.linspace(minX, maxX, nBins+1)
     if minY==maxY:
