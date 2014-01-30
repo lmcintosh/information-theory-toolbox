@@ -2,8 +2,8 @@ function H = nnEntropy(samples)
 %% nnEntropy calculates the nearest neighbors entropy of samples
 %% input is samples by dimensions
 
-k    = size(x,2);
-n    = size(x,1);
+k    = size(samples,2);
+n    = size(samples,1);
 
 Ak = (k*pi^(k/2))/gamma(k/2+1);
 
