@@ -89,7 +89,7 @@ def getrho(x):
     return np.min(D, axis=0)
 
 
-def nearestNeighborsEntropy(x):
+def nnEntropy(x):
     '''Compute the binless entropy (bits) of a random vector using average nearest 
     neighbors distance (Kozachenko and Leonenko, 1987).
     
@@ -105,7 +105,7 @@ def nearestNeighborsEntropy(x):
     
     Ak  = (k*pi**(float(k)/float(2)))/gamma(float(k)/float(2)+1)
     rho = getrho(x)
-    H   = k*mean(log2(rho)) + log2(x.shape[0]*Ak/k) + log2(e)*0.5772156649
     
-    return H
+    return k*mean(log2(rho)) + log2(x.shape[0]*Ak/k) + log2(e)*0.5772156649
+
 
