@@ -8,6 +8,33 @@ from scipy.special import gamma
         
 # in future want to incorporate bias estimators, and add a different way of calculating mutual information without adding and subtracting entropies.
 
+def entropy(x, nBins=10):
+    '''Function to compute the mutual information between random variables x and y.  
+    You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
+    are just the minimums and maximums of x and y).
+    
+    x also needs to be an array, so you could use asarray(x) if you encounter errors.
+    
+    x should be samples by dimensions
+    
+    I have also found that the smoothness of the estimate becomes better with more bins, since
+    you get artifacts when a random variable moves into another bin whenever you sample.'''
+    
+    
+    Counts, edges = np.histogramdd(x, bins=nBins)
+    Probs         = Counts.astype(float)/float(sum(Counts))
+    
+    if abs(1 - sum(Probs)) > 0.01:
+        print 'Probabilities do not sum to one ' + str(sum(Probs))
+    
+    H = 0.0
+    for p in Probs.flat:
+        if p != 0:
+            H = H - p * log2(p)
+            
+    return H
+
+
 def mutualinfo(x, y, nBins, minX=0, maxX=0, minY=0, maxY=0):
     '''Function to compute the mutual information between random variables x and y.  
     You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
