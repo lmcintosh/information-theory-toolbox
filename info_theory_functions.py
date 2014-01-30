@@ -62,10 +62,9 @@ def mutualinfo(x, y, nBins, minX=0, maxX=0, minY=0, maxY=0):
                 if pXY[i,j] != 0:
                     HXY = HXY - pXY[i,j] * log2(pXY[i,j])
                     
-    H = [HX, HY, HXY]
     I = HX + HY - HXY
     
-    return H, I
+    return I
 
 
 
