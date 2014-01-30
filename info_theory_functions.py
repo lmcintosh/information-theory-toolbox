@@ -108,4 +108,9 @@ def nnEntropy(x):
     
     return k*mean(log2(rho)) + log2(x.shape[0]*Ak/k) + log2(e)*0.5772156649
 
-
+def nnInfo(x,y):
+    '''nnInfo calculates mutual information between x and y 
+    by using nearest neighbors entropy and I = HX + HY - HXY.
+    '''
+    
+    return nnEntropy(x) + nnEntropy(y) - nnEntropy(np.concatenate([x,y],axis=1))
