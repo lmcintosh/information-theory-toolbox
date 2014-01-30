@@ -75,9 +75,8 @@ def binaryWordsInformation(spikes,stimulus):
     with as many elements as neurons.
     '''
     nBins = 2
-    H, I  = mutualinfo(spikes,stimulus,nBins,0,1,min(stimulus),max(stimulus))
     
-    return I
+    return mutualinfo(spikes,stimulus,nBins,0,1,min(stimulus),max(stimulus))
 
 
 def getrho(x):
