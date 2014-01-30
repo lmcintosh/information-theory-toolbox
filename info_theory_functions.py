@@ -2,7 +2,10 @@
 
 import numpy as np
 from scipy import *
+from scipy.spatial.distance import pdist, squareform
+from scipy.special import gamma
 
+        
 # in future want to incorporate bias estimators, and add a different way of calculating mutual information without adding and subtracting entropies.
 
 def mutualinfo(x, y, nBins, minX=0, maxX=0, minY=0, maxY=0):
@@ -78,22 +81,31 @@ def binaryWordsInformation(spikes,stimulus):
     return I
 
 
+def getrho(x):
+    if len(x.shape) < 2:
+        x = np.reshape(x, (1000,1))
+    D = squareform(pdist(x, 'euclidean'))
+    D = D + np.max(D)*eye(D.shape[0])
+    return np.min(D, axis=0)
+
+
 def nearestNeighborsEntropy(x):
     '''Compute the binless entropy (bits) of a random vector using average nearest 
     neighbors distance (Kozachenko and Leonenko, 1987).
     
-    For a review see Beirlant et al., 2001.
+    For a review see Beirlant et al., 2001 or Chandler & Field, 2007.
+    
+    x is samples by dimensions.
     '''
 
-    rho = np.zeros((x.shape[0],))
-    H   = 0
-    for idx,pt in enumerate(x):
-        # get second smallest minimum distance (first will always be i=j)
-        # H = 1/n sum_i=1^n ln(n*rho_n,i) + ln(2) + Euler's constant
-        if idx > 1:
-            rho[idx] = sort(np.sqrt(sum((pt - x[:idx-1,:])**2,axis=1)))[0]
-            H += log((idx+1)*rho[idx])
-        
+    if len(x.shape) > 1:
+        k = x.shape[1]
+    else:
+        k = 1
     
-    # convert nats to bits
-    return log2(e)*((1.0/float(len(x)))*H + log(2) + 0.5772156649)
+    Ak  = (k*pi**(float(k)/float(2)))/gamma(float(k)/float(2)+1)
+    rho = getrho(x)
+    H   = k*mean(log2(rho)) + log2(x.shape[0]*Ak/k) + log2(e)*0.5772156649
+    
+    return H
+
