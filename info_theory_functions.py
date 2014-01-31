@@ -48,7 +48,7 @@ def mutualinfo(x, y, xBins=10, yBins=10):
     if you encounter errors.
 
     Bins can either be the number of bins (either one number to apply to all dimensions, or a sequence
-    of nBins for each dimension), or can be a sequence of arrays of the bin edges along each dimension.
+    of nBins for each dimension), or can be a list of arrays of the bin edges along each dimension.
 
     I have also found that the smoothness of the estimate becomes better with more bins, since
     you get artifacts when a random variable moves into another bin whenever you sample.'''
@@ -58,8 +58,10 @@ def mutualinfo(x, y, xBins=10, yBins=10):
     if len(y.shape) < 2:
         y = np.reshape(y, (y.shape[0],1))
 
-
-    return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), [xBins,yBins])
+    if isinstance(xBins, list):
+        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), xBins.append(yBins[0]))
+    else:
+        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), [xBins,yBins])
 
 
 
@@ -74,7 +76,7 @@ def binaryWordsInformation(spikes,stimulus):
     stimBins  = np.linspace(min(stimulus),max(stimulus),nBins+1)
 
 
-    return mutualinfo(spikes, stimulus, Bins=[spikeBins, stimBins])
+    return mutualinfo(spikes, stimulus, xBins=[spikeBins], yBins=[stimBins])
 
 
 def getrho(x):
