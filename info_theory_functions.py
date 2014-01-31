@@ -39,7 +39,7 @@ def entropy(x, Bins=10):
     return H
 
 
-def mutualinfo(x, y, Bins=10):
+def mutualinfo(x, y, xBins=10, yBins=10):
     '''Function to compute the mutual information between random variables x and y.  
     You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
     are just the minimums and maximums of x and y).
@@ -59,7 +59,7 @@ def mutualinfo(x, y, Bins=10):
         y = np.reshape(y, (y.shape[0],1))
 
 
-    return entropy(x, nBins) + entropy(y, nBins) - entropy(np.concatenate([x,y],axis=1), nBins)
+    return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), [xBins,yBins])
 
 
 
