@@ -10,20 +10,22 @@ from scipy.special import gamma
 
 # so in general, the histogram approach has more bias but less variance than the nearest-neighbor approach.  Memory also severely limits the applicability of the histogram approach - with just 10e3 samples, calculating the entropy of more than 8 dimensions becomes infeasible for modern consumer computers.
 
-def entropy(x, nBins=10):
+def entropy(x, Bins=10):
     '''Function to compute the mutual information between random variables x and y.  
     You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
     are just the minimums and maximums of x and y).
     
-    x also needs to be an array, so you could use asarray(x) if you encounter errors.
-    
-    x should be samples by dimensions
+    x should be samples by dimensions.  x also needs to be an array, so you could use asarray(x) 
+    if you encounter errors.
+
+    Bins can either be the number of bins (either one number to apply to all dimensions, or a sequence
+    of nBins for each dimension), or can be a sequence of arrays of the bin edges along each dimension.
     
     I have also found that the smoothness of the estimate becomes better with more bins, since
     you get artifacts when a random variable moves into another bin whenever you sample.'''
     
     
-    Counts, edges = np.histogramdd(x, bins=nBins)
+    Counts, edges = np.histogramdd(x, bins=Bins)
     Probs         = Counts.astype(float)/float(sum(Counts))
     
     if abs(1 - sum(Probs)) > 0.01:
@@ -37,63 +39,27 @@ def entropy(x, nBins=10):
     return H
 
 
-def mutualinfo(x, y, nBins, minX=0, maxX=0, minY=0, maxY=0):
+def mutualinfo(x, y, Bins=10):
     '''Function to compute the mutual information between random variables x and y.  
     You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
     are just the minimums and maximums of x and y).
     
-    x and y also need to be an array, so you could use asarray(x) if you encounter errors.
-    
+    x and y should be samples by dimensions.  They also need to be an array, so you could use asarray(x) 
+    if you encounter errors.
+
+    Bins can either be the number of bins (either one number to apply to all dimensions, or a sequence
+    of nBins for each dimension), or can be a sequence of arrays of the bin edges along each dimension.
+
     I have also found that the smoothness of the estimate becomes better with more bins, since
     you get artifacts when a random variable moves into another bin whenever you sample.'''
     
-    # in future want to make a default for min and max
-    if minX==maxX:
-        binsX = np.linspace(min(x), max(x), nBins+1)
-    else:
-        binsX = np.linspace(minX, maxX, nBins+1)
-    if minY==maxY:
-        binsY = np.linspace(min(y), max(y), nBins+1)
-    else:
-        binsY = np.linspace(minY, maxY, nBins+1)
-    
-    # Counting
-    CountsXY, xedges, yedges = np.histogram2d(np.squeeze(x),np.squeeze(y), bins=[binsX, binsY])
-    CountsX = sum(CountsXY,0) # this sums all the rows, leaving the marginal distribution of x
-    CountsY = sum(CountsXY,1) # this sums all the cols, leaving the marginal distribution of y
-    
-    pX  = CountsX.astype(float)/float(sum(CountsX))
-    pY  = CountsY.astype(float)/float(sum(CountsY))
-    pXY = CountsXY.astype(float)/float(sum(CountsXY))
-    
-    
-    if abs(1 - sum(pX)) > 0.01:
-        print 'Probabilities pX do not sum to one ' + str(sum(pX))
-    if abs(1 - sum(pY)) > 0.01:
-        print 'Probabilities pY do not sum to one ' + str(sum(pY))
-    if abs(1 - sum(pXY)) > 0.01:
-        print 'Probabilities pXY do not sum to one ' + str(sum(pXY))
-    
-    
-    # Entropies
-    HX  = 0.0
-    HY  = 0.0
-    HXY = 0.0
-    
-    for prob in pY:
-        if prob != 0:
-            HY = HY - prob*log2(prob)
-    
-    for j in xrange(len(pX)):
-        if pX[j] != 0:
-            HX = HX - pX[j] * log2(pX[j])
-            for i in xrange(len(pY)):
-                if pXY[i,j] != 0:
-                    HXY = HXY - pXY[i,j] * log2(pXY[i,j])
-                    
-    I = HX + HY - HXY
-    
-    return I
+    if len(x.shape) < 2:
+        x = np.reshape(x, (x.shape[0],1))
+    if len(y.shape) < 2:
+        y = np.reshape(y, (y.shape[0],1))
+
+
+    return entropy(x, nBins) + entropy(y, nBins) - entropy(np.concatenate([x,y],axis=1), nBins)
 
 
 
@@ -103,9 +69,12 @@ def binaryWordsInformation(spikes,stimulus):
     Spikes and stimulus are both 1-d vertical numpy arrays
     with as many elements as neurons.
     '''
-    nBins = 2
-    
-    return mutualinfo(spikes,stimulus,nBins,0,1,min(stimulus),max(stimulus))
+    nBins     = 2
+    spikeBins = np.linspace(0,1,nBins+1)
+    stimBins  = np.linspace(min(stimulus),max(stimulus),nBins+1)
+
+
+    return mutualinfo(spikes, stimulus, Bins=[spikeBins, stimBins])
 
 
 def getrho(x):
