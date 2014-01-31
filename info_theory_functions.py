@@ -59,7 +59,10 @@ def mutualinfo(x, y, xBins=10, yBins=10):
         y = np.reshape(y, (y.shape[0],1))
 
     if isinstance(xBins, list):
-        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), xBins.append(yBins[0]))
+        zBins = list(xBins)
+        zBins.append(yBins[0])
+        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+
     else:
         return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), [xBins,yBins])
 
