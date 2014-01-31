@@ -8,7 +8,7 @@ from scipy.special import gamma
         
 # in future want to incorporate bias estimators, and add a different way of calculating mutual information without adding and subtracting entropies.
 
-# so in general, the histogram approach has more bias but less variance than the nearest-neighbor approach.
+# so in general, the histogram approach has more bias but less variance than the nearest-neighbor approach.  Memory also severely limits the applicability of the histogram approach - with just 10e3 samples, calculating the entropy of more than 8 dimensions becomes infeasible for modern consumer computers.
 
 def entropy(x, nBins=10):
     '''Function to compute the mutual information between random variables x and y.  
