@@ -24,7 +24,7 @@ def entropy(x, Bins=10):
     I have also found that the smoothness of the estimate becomes better with more bins, since
     you get artifacts when a random variable moves into another bin whenever you sample.'''
     
-    
+
     Counts, edges = np.histogramdd(x, bins=Bins)
     Probs         = Counts.astype(float)/float(sum(Counts))
     
@@ -57,12 +57,35 @@ def mutualinfo(x, y, xBins=10, yBins=10):
         x = np.reshape(x, (x.shape[0],1))
     if len(y.shape) < 2:
         y = np.reshape(y, (y.shape[0],1))
-
+    
+    # either you've specified bin edges
     if isinstance(xBins, list):
         zBins = list(xBins)
         zBins.append(yBins[0])
         return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
 
+    # or you just specified the number of bins but fewer times than the number of dimensions in x (and possibly y)
+    elif isinstance(xBins, int) and x.shape[1] > 1:
+        # make an nBins for each dimension
+        xBins = [xBins]*x.shape[1]
+        if isinstance(yBins, int) and y.shape[1] > 1:
+            yBins = [yBins]*y.shape[1]
+            zBins = xBins + yBins
+            return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+        else:
+            zBins = list(xBins)
+            zBins.append(yBins)
+            return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+
+    # or you just specified the number of bins but fewer times than the number of dimensions in y
+    elif isinstance(yBins, int) and y.shape[1] > 1:
+        yBins = [yBins]*y.shape[1]
+        zBins = list(yBins)
+        zBins.insert(0, xBins)
+        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+
+
+    # or everything is just fine
     else:
         return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), [xBins,yBins])
 
