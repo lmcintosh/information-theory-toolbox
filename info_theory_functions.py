@@ -61,7 +61,9 @@ def mutualinfo(x, y, xBins=10, yBins=10):
     # either you've specified bin edges
     if isinstance(xBins, list):
         zBins = list(xBins)
-        zBins.append(yBins[0])
+        for d in xrange(len(yBins)):
+            zBins.append(yBins[d])
+        
         return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
 
     # or you just specified the number of bins but fewer times than the number of dimensions in x (and possibly y)
