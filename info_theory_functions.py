@@ -74,7 +74,7 @@ def mutualinfo(x, y, xBins=10, yBins=10):
         for d in xrange(len(yyBins)):
             zBins.append(yyBins[d])
 
-        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+        return entropy(x, xxBins) + entropy(y, yyBins) - entropy(np.concatenate([x,y],axis=1), zBins)
         
     # or you just specified the number of bins but fewer times than the number of dimensions in x (and possibly y)
     elif isinstance(xBins, int) and x.shape[1] > 1:
