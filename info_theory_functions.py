@@ -58,7 +58,7 @@ def mutualinfo(x, y, xBins=10, yBins=10):
     if len(y.shape) < 2:
         y = np.reshape(y, (y.shape[0],1))
     
-    # either you've specified bin edges
+    # either you've specified bin edges for each dimension
     if isinstance(xBins, list):
         zBins = list(xBins)
         for d in xrange(len(yBins)):
@@ -66,6 +66,16 @@ def mutualinfo(x, y, xBins=10, yBins=10):
         
         return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
 
+    # or you've specified bin edges once for x and y each but not for each dimension
+    elif isinstance(xBins, np.ndarray):
+        xxBins = [xBins]*x.shape[1]
+        yyBins = [yBins]*y.shape[1]
+        zBins  = list(xxBins)
+        for d in xrange(len(yyBins)):
+            zBins.append(yyBins[d])
+
+        return entropy(x, xBins) + entropy(y, yBins) - entropy(np.concatenate([x,y],axis=1), zBins)
+        
     # or you just specified the number of bins but fewer times than the number of dimensions in x (and possibly y)
     elif isinstance(xBins, int) and x.shape[1] > 1:
         # make an nBins for each dimension
