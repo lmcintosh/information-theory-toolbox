@@ -1,6 +1,6 @@
 function H = nnEntropy(samples)
-%% nnEntropy calculates the nearest neighbors entropy of samples
-%% input is samples by dimensions
+%% nnEntropy calculates the nearest neighbors entropy of samples.
+% Input is samples by dimensions
 
 k    = size(samples,2);
 n    = size(samples,1);
