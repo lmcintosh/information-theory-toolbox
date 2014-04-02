@@ -11,9 +11,7 @@ from scipy.special import gamma
 # so in general, the histogram approach has more bias but less variance than the nearest-neighbor approach.  Memory also severely limits the applicability of the histogram approach - with just 10e3 samples, calculating the entropy of more than 8 dimensions becomes infeasible for modern consumer computers.
 
 def entropy(x, Bins=10):
-    '''Function to compute the mutual information between random variables x and y.  
-    You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
-    are just the minimums and maximums of x and y).
+    '''Function to compute the entropy of a random variable x.  
     
     x should be samples by dimensions.  x also needs to be an array, so you could use asarray(x) 
     if you encounter errors.
@@ -41,8 +39,6 @@ def entropy(x, Bins=10):
 
 def mutualinfo(x, y, xBins=10, yBins=10):
     '''Function to compute the mutual information between random variables x and y.  
-    You need to specify the number of bins as well as the minimum and maximum of x and y (by default these
-    are just the minimums and maximums of x and y).
     
     x and y should be samples by dimensions.  They also need to be an array, so you could use asarray(x) 
     if you encounter errors.
@@ -103,15 +99,15 @@ def mutualinfo(x, y, xBins=10, yBins=10):
 
 
 
-def binaryWordsInformation(spikes,stimulus):
-    '''Compute entropy of spike trains with binary words approach.
+def binaryWordsInformation(spikes,stimulus,Bins=2):
+    '''Compute the mutual information between a spike train and a stimulus.
     
     Spikes and stimulus are both 1-d vertical numpy arrays
     with as many elements as neurons.
     '''
     nBins     = 2
     spikeBins = np.linspace(0,1,nBins+1)
-    stimBins  = np.linspace(min(stimulus),max(stimulus),nBins+1)
+    stimBins  = np.linspace(min(stimulus),max(stimulus),Bins+1)
 
 
     return mutualinfo(spikes, stimulus, xBins=[spikeBins], yBins=[stimBins])
