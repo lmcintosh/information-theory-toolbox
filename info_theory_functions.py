@@ -4,13 +4,14 @@ import numpy as np
 from scipy import *
 from scipy.spatial.distance import pdist, squareform
 from scipy.special import gamma
+from numpy.linalg import det
 
         
 # in future want to incorporate bias estimators, and add a different way of calculating mutual information without adding and subtracting entropies.
 
 # so in general, the histogram approach has more bias but less variance than the nearest-neighbor approach.  Memory also severely limits the applicability of the histogram approach - with just 10e3 samples, calculating the entropy of more than 8 dimensions becomes infeasible for modern consumer computers.
 
-def entropy(x, Bins=10):
+def entropy(x, Bins=10, mode='full'):
     '''Function to compute the entropy of a random variable x.  
     
     x should be samples by dimensions.  x also needs to be an array, so you could use asarray(x) 
@@ -23,18 +24,27 @@ def entropy(x, Bins=10):
     you get artifacts when a random variable moves into another bin whenever you sample.'''
     
 
-    Counts, edges = np.histogramdd(x, bins=Bins)
-    Probs         = Counts.astype(float)/float(sum(Counts))
-    
-    if abs(1 - sum(Probs)) > 0.01:
-        print 'Probabilities do not sum to one ' + str(sum(Probs))
-    
-    H = 0.0
-    for p in Probs.flat:
-        if p != 0:
-            H = H - p * log2(p)
-            
-    return H
+    if mode == 'full':
+        Counts, edges = np.histogramdd(x, bins=Bins)
+        Probs         = Counts.astype(float)/float(sum(Counts))
+        
+        if abs(1 - sum(Probs)) > 0.01:
+            print 'Probabilities do not sum to one ' + str(sum(Probs))
+        
+        H = 0.0
+        for p in Probs.flat:
+            if p != 0:
+                H = H - p * log2(p)
+        return H
+    elif mode == 'as-if-Gaussian':
+        detCov = det(x.dot(x.transpose()))
+        normalization = (2*pi*e)**x.shape[1]
+        H = 0.5*np.log(normalization*detCov)
+        return H
+    elif mode == 'nearest-neighbors':
+        return nnEntropy(x)
+    else:
+        print "mode must be 'full', 'nearest-neighbors', or 'as-if-Gaussian'"
 
 
 def mutualinfo(x, y, xBins=10, yBins=10):
